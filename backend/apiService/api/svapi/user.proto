@@ -1,0 +1,26 @@
+syntax = "proto3";
+package svapi;
+
+option go_package = "github.com/Gishinkou/kker-kratos/...;svapi";
+
+import "google/api/annotations.proto";
+import "buf/validate/validate.proto";
+
+service UserService {
+    rpc GetVerificationCode(GetVerificationCodeRequest) returns (GetVerificationCodeResponse) {
+        option (google.api.http) = {
+            post: "/user/code"
+            body: "*"
+        };
+    };
+};
+
+message GetVerificationCodeRequest {
+    string mobile = 1;
+    string email = 2;
+};
+
+message GetVerificationCodeResponse {
+    // @gotags: json:"code_id,omitempty,string"
+    int64 code_id = 1;
+};
