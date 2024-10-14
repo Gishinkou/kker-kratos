@@ -12,11 +12,11 @@ gen-proto:
 		./api/svapi/*.proto
 	protoc-go-inject-tag -input="./api/svapi/*.pb.go"
 
-# build:
-# 	docker build -t sv-api-service .
+build:
+	docker build -t api-service .
 
-# build1:
-# 	 docker build --build-arg proxy="https://goproxy.cn" -t sv-api-service .
+build1:
+	 docker build --build-arg proxy="https://goproxy.cn" -t api-service .
 
 wire:
 	cd ./internal/server && wire

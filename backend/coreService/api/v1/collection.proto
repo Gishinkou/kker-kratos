@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package coreService.api.v1;
+
+option go_package = "github.com/Gishinkou/kker-kratos/backend/coreService/api/v1;v1";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "corebase.proto";
+
+message Collection {
+    int64 id = 1;
+    int64 user_id = 2;
+    string name = 3;
+    string description = 4;
+}
+
+service CollectionService {
+    rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse);
+    rpc GetCollectionById(GetCollectionByIdRequest) returns (GetCollectionByIdResponse);
+    rpc RemoveCollection(RemoveCollectionRequest) returns (RemoveCollectionResponse);
+    rpc ListCollection(ListCollectionRequest) returns (ListCollectionResponse);
+    rpc UpdateCollection(UpdateCollectionRequest) returns (UpdateCollectionResponse);
+    rpc AddMedia2Collection(AddMedia2CollectionRequest) returns (AddMedia2CollectionResponse);
+    rpc RemoveMediaFromCollection(RemoveMediaFromCollectionRequest) returns (RemoveMediaFromCollectionResponse);
+    rpc ListCollectionMedia(ListCollectionMediaRequest) returns (ListCollectionMediaResponse);
+}
+
+message CreateCollectionRequest {
+    string name = 1;
+    string description = 2;
+    int64 user_id = 3;
+}
+
+message CreateCollectionResponse {
+    Metadata meta = 1;
+}
+
+message GetCollectionByIdRequest {
+    int64 id = 1;
+}
+
+message GetCollectionByIdResponse {
+    Collection collection = 1;
+    Metadata meta = 2;
+}
+
+message RemoveCollectionRequest {
+    int64 id = 1;
+}
+
+message RemoveCollectionResponse {
+    Metadata meta = 1;
+}
+
+message ListCollectionRequest {
+    int64 user_id = 1;
+    PaginationRequest pagination = 2;
+}
+
+message ListCollectionResponse {
+    repeated Collection collections = 1;
+    Metadata meta = 2;
+    PaginationResponse pagination = 3;
+}
+
+message UpdateCollectionRequest {
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message UpdateCollectionResponse {
+    Metadata meta = 1;
+}
+
+message AddMedia2CollectionRequest {
+    int64 collection_id = 1;
+    int64 media_id = 2;
+}
+
+message AddMedia2CollectionResponse {
+    Metadata meta = 1;
+}
+
+message RemoveMediaFromCollectionRequest {
+    int64 collection_id = 1;
+    int64 media_id = 2;
+}
+
+message RemoveMediaFromCollectionResponse {
+    Metadata meta = 1;
+}
+
+message ListCollectionMediaRequest {
+    int64 collection_id = 1;
+    PaginationRequest pagination = 2;
+}
+
+message ListCollectionMediaResponse {
+    repeated int64 media_id_list = 1;
+    Metadata meta = 2;
+    PaginationResponse pagination = 3;
+}

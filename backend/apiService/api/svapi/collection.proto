@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package apiService.svapi;
+
+option go_package = "github.com/Gishinkou/kker-kratos/backend/apiService/api/svapi;svapi";
+
+import "google/api/annotations.proto";
+import "buf/validate/validate.proto";
+import "svapi/base.proto";
+
+message Collection {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1; // 收藏夹id
+    // @gotags: json:"userId,omitempty,string"
+    int64 user_id = 2; // 用户id
+    string name = 3; // 收藏夹名称
+    string description = 4; // 收藏夹描述
+}
+
+message CollectionMedia {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1; // 收藏夹id
+    // @gotags: json:"mediaId,omitempty,string"
+    int64 media_id = 2; // 媒体id
+    string cover_url = 3; // 媒体封面地址
+    string title = 4; // 媒体标题
+    string description = 5; // 媒体描述
+    string media_url = 6; // 媒体地址
+}
+
+// 收藏夹服务
+service CollectionService {
+    // 创建收藏夹
+    rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse) {
+        option (google.api.http) = {
+            post: "/collection"
+            body: "*"
+        };
+    };
+
+    // 删除收藏夹
+    rpc RemoveCollection(RemoveCollectionRequest) returns (RemoveCollectionResponse) {
+        option (google.api.http) = {
+            delete: "/collection"
+            body: "*"
+        };
+    };
+
+    // 列出用户的收藏夹
+    rpc ListCollection(ListCollectionRequest) returns (ListCollectionResponse) {
+        option (google.api.http) = {
+            get: "/collection"
+        };
+    };
+
+    // 更新收藏夹信息
+    rpc UpdateCollection(UpdateCollectionRequest) returns (UpdateCollectionResponse) {
+        option (google.api.http) = {
+            put: "/collection"
+            body: "*"
+        };
+    };
+
+    // 将媒体添加到收藏夹
+    rpc AddMedia2Collection(AddMedia2CollectionRequest) returns (AddMedia2CollectionResponse) {
+        option (google.api.http) = {
+            post: "/collection/media"
+            body: "*"
+        };
+    };
+
+    // 从收藏夹中移除媒体
+    rpc RemoveMediaFromCollection(RemoveMediaFromCollectionRequest) returns (RemoveMediaFromCollectionResponse) {
+        option (google.api.http) = {
+            delete: "/collection/media"
+            body: "*"
+        };
+    };
+
+    // 列出收藏夹中的媒体
+    rpc ListMedia4Collection(ListMedia4CollectionRequest) returns (ListMedia4CollectionResponse) {
+        option (google.api.http) = {
+            get: "/collection/media"
+        };
+    };
+}
+
+message CreateCollectionRequest {
+    string name = 1; // 收藏夹名称
+    string description = 2; // 收藏夹描述
+}
+
+message CreateCollectionResponse {
+    Collection collection = 1;
+}
+
+message RemoveCollectionRequest {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1; // 收藏夹id
+}
+
+message RemoveCollectionResponse {}
+
+message ListCollectionRequest {
+    PaginationRequest pagination = 1;
+}
+
+message ListCollectionResponse {
+    repeated Collection collections = 1;
+    PaginationResponse pagination = 2;
+}
+
+message UpdateCollectionRequest {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1; // 收藏夹id
+    string name = 2; // 收藏夹名称
+    string description = 3; // 收藏夹描述
+}
+
+message UpdateCollectionResponse {
+    Collection collection = 1;
+}
+
+message AddMedia2CollectionRequest {
+    // @gotags: json:"collectionId,omitempty,string"
+    int64 collection_id = 1; // 收藏夹id
+    // @gotags: json:"mediaId,omitempty,string"
+    int64 media_id = 2; // 媒体id
+}
+
+message AddMedia2CollectionResponse {}
+
+message RemoveMediaFromCollectionRequest {
+    // @gotags: json:"collectionId,omitempty,string"
+    int64 collection_id = 1; // 收藏夹id
+    // @gotags: json:"mediaId,omitempty,string"
+    int64 media_id = 2; // 媒体id
+}
+
+message RemoveMediaFromCollectionResponse {}
+
+message ListMedia4CollectionRequest {
+    // @gotags: json:"collectionId,omitempty,string"
+    int64 collection_id = 1; // 收藏夹id
+    PaginationRequest pagination = 2;
+}
+
+message ListMedia4CollectionResponse {
+    repeated CollectionMedia medias = 1;
+    PaginationResponse pagination = 2;
+}

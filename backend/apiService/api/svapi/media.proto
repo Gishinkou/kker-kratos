@@ -1,0 +1,210 @@
+syntax = "proto3";
+package apiService.svapi;
+
+option go_package = "github.com/Gishinkou/kker-kratos/backend/apiService/api/svapi;svapi";
+
+import "google/api/annotations.proto";
+import "buf/validate/validate.proto";
+import "svapi/base.proto";
+
+service MediaService {
+    // 预注册上传媒体
+    rpc PreSign4UploadMedia(PreSign4UploadMediaRequest) returns (PreSign4UploadMediaResponse) {
+        option (google.api.http) = {
+            post: "/media/upload"
+            body: "*"
+        };
+    };
+
+    // 预注册上传封面
+    rpc PreSign4UploadCover(PreSign4UploadRequest) returns (PreSign4UploadResponse) {
+        option (google.api.http) = {
+            post: "/cover/upload"
+            body: "*"
+        };
+    };
+
+    // 通用确认上传完成
+    rpc ReportFinishUpload(ReportFinishUploadRequest) returns (ReportFinishUploadResponse) {
+        option (google.api.http) = {
+            post: "/file/{file_id}/finish"
+            body: "*"
+        };
+    };
+
+    // 确认媒体上传完成
+    rpc ReportMediaFinishUpload(ReportMediaFinishUploadRequest) returns (ReportMediaFinishUploadResponse) {
+        option (google.api.http) = {
+            post: "/media/finish"
+            body: "*"
+        };
+    };
+
+    // 刷媒体
+    rpc FeedShortMedia(FeedShortMediaRequest) returns (FeedShortMediaResponse) {
+        option (google.api.http) = {
+            post: "/media/feed"
+            body: "*"
+        };
+    };
+
+    // 获取媒体信息
+    rpc GetMediaById(GetMediaByIdRequest) returns (GetMediaByIdResponse) {
+        option (google.api.http) = {
+            get: "/media/{media_id}"
+        };
+    };
+
+    // 获取当前用户的发布媒体列表
+    rpc ListPublishedMedia(ListPublishedMediaRequest) returns (ListPublishedMediaResponse) {
+        option (google.api.http) = {
+            post: "/media/list"
+            body: "*"
+        };
+    };
+}
+
+message MediaAuthor {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1;
+    string name = 2;
+    string avatar = 3;
+    bool is_following = 4;
+}
+
+message media {
+    // @gotags: json:"id,omitempty,string"
+    int64 id = 1; // 媒体唯一标识
+    MediaAuthor author = 2; // 媒体作者信息
+    string play_url = 3; // 媒体播放地址
+    string cover_url = 4; // 媒体封面地址
+    // @gotags: json:"favorite_count,omitempty,string"
+    int64 favorite_count = 5; // 媒体的点赞总数
+    // @gotags: json:"comment_count,omitempty,string"
+    int64 comment_count = 6; // 媒体的评论总数
+    bool is_favorite = 7; // true-已点赞，false-未点赞
+    string title = 8; // 媒体标题
+}
+
+// 预注册上传媒体请求消息类型
+message PreSign4UploadMediaRequest {
+    // md5 hash
+    string hash = 1;
+    // 文件类型，默认mp4
+    string file_type = 2;
+    // 文件大小，单位byte
+    // @gotags: json:"size,omitempty,string"
+    int64 size = 3;
+    // 文件名
+    string filename = 4;
+}
+
+// 预注册上传媒体响应消息类型
+message PreSign4UploadMediaResponse {
+    // minio上传地址
+    string url = 1;
+    // 文件id
+    // @gotags: json:"file_id,omitempty,string"
+    int64 file_id = 2;
+}
+
+// 通用小文件单次上传请求消息类型
+message PreSign4UploadRequest {
+    // md5 hash
+    string hash = 1;
+    // 文件类型，默认mp4
+    string file_type = 2;
+    // 文件大小，单位byte
+    // @gotags: json:"size,omitempty,string"
+    int64 size = 3;
+    // 文件名
+    string filename = 4;
+}
+
+// 通用小文件单次上传响应消息类型
+message PreSign4UploadResponse {
+    // minio上传地址
+    string url = 1;
+    // 文件id
+    // @gotags: json:"file_id,omitempty,string"
+    int64 file_id = 2;
+}
+
+// 确认媒体上传完成请求消息类型
+message ReportMediaFinishUploadRequest {
+    // 文件id
+    // @gotags: json:"file_id,omitempty,string"
+    int64 file_id = 1;
+    // 媒体标题
+    string title = 3;
+    // 媒体封面地址
+    string cover_url = 4;
+    // 媒体描述
+    string description = 5;
+    // 媒体地址
+    string media_url = 6;
+}
+
+// 确认媒体上传完成响应消息类型
+message ReportMediaFinishUploadResponse {
+    // 媒体id
+    // @gotags: json:"media_id,omitempty,string"
+    int64 media_id = 1;
+}
+
+// 通用确认上传完成请求消息类型
+message ReportFinishUploadRequest {
+    // 文件id
+    // @gotags: json:"file_id,omitempty,string"
+    int64 file_id = 1;
+}
+
+// 通用确认上传完成响应消息类型
+message ReportFinishUploadResponse {
+    // url
+    string url = 1;
+}
+
+// 刷媒体请求消息类型
+message FeedShortMediaRequest {
+    // @gotags: json:"latest_time,omitempty,string"
+    int64 latest_time = 1;  // 可选参数，限制返回媒体的最新投稿时间戳，精确到秒，不填表示当前时间
+    // @gotags: json:"user_id,omitempty,string"
+    int64 user_id = 2 [(buf.validate.field).int64 = {gt: 0}];
+    // @gotags: json:"feed_num,omitempty,string"
+    int64 feed_num = 3 [(buf.validate.field).int64 = {gt: 0}]; // 返回媒体的数量
+}
+
+// 刷媒体响应消息类型
+message FeedShortMediaResponse {
+    svapi.Metadata meta = 1;
+    repeated media medias = 2;
+    // @gotags: json:"next_time,omitempty,string"
+    int64 next_time = 3; // 本次返回的媒体中，发布最早的时间，作为下次请求时的latest_time
+}
+
+// 获取媒体信息请求消息类型
+message GetMediaByIdRequest {
+    // @gotags: json:"media_id,omitempty,string"
+    int64 media_id = 1 [(buf.validate.field).int64 = {gt: 0}];
+}
+
+// 获取媒体信息响应消息类型
+message GetMediaByIdResponse {
+    media media = 2;
+}
+
+// 获取当前用户的发布媒体列表请求消息类型
+message ListPublishedMediaRequest {
+    // @gotags: json:"user_id,omitempty,string"
+    int64 user_id = 1 [(buf.validate.field).int64 = {gt: 0}];
+    PaginationRequest pagination = 2;
+}
+
+// 获取当前用户的发布媒体列表响应消息类型
+message ListPublishedMediaResponse {
+    repeated media media_list = 2;
+    PaginationResponse pagination = 3;
+}
+
+
